@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import feedRoutes from './feed';
 
 const router = Router();
 
@@ -7,8 +8,7 @@ router.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// API routes will be registered here
-// router.use('/api/v1/posts', postsRoutes);
-// router.use('/api/v1/saved', savedPostsRoutes);
+// API routes
+router.use('/api', feedRoutes);
 
 export default router;

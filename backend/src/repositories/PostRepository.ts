@@ -25,7 +25,7 @@ export class PostRepository {
   ): Promise<PostWithSaveStatus[]> {
     const offset = (page - 1) * limit;
 
-    // Get posts with save status and save count
+    // Get posts with save status
     const result = await db
       .select({
         id: posts.id,
@@ -35,7 +35,6 @@ export class PostRepository {
         content: posts.content,
         createdAt: posts.createdAt,
         hasSaved: sql<boolean>`CASE WHEN ${savedPosts.id} IS NOT NULL THEN 1 ELSE 0 END`,
-        savesCount: sql<number>`COUNT(DISTINCT ${savedPosts.id}) OVER (PARTITION BY ${posts.id})`,
       })
       .from(posts)
       .leftJoin(
@@ -43,13 +42,6 @@ export class PostRepository {
         and(
           eq(savedPosts.postId, posts.id),
           eq(savedPosts.userId, userId),
-          sql`${savedPosts.deletedAt} IS NULL`
-        )
-      )
-      .leftJoin(
-        savedPosts,
-        and(
-          eq(savedPosts.postId, posts.id),
           sql`${savedPosts.deletedAt} IS NULL`
         )
       )
