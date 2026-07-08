@@ -2,7 +2,7 @@
 
 # Engineering Decision Log
 
-**Version:** 1.0
+**Version:** 1.1
 
 **Purpose**
 
@@ -18,6 +18,49 @@ Each decision documents:
 * Future Improvements
 
 The goal is to make architectural reasoning transparent and provide context during future maintenance, design reviews, and technical interviews.
+
+---
+
+# Decision 0 — Database Driver Selection (Node.js 24 Compatibility)
+
+## Decision
+
+Use **@libsql/client** instead of better-sqlite3 for SQLite database access.
+
+---
+
+## Reason
+
+The development environment uses Node.js v24.14.0, which requires C++20 or later for native module compilation. The better-sqlite3 package failed to compile due to C++17 compatibility issues in its native bindings. @libsql/client provides the same SQLite functionality with better Node.js 24 compatibility and is fully compatible with Drizzle ORM.
+
+---
+
+## Alternatives Considered
+
+* better-sqlite3 (specified in ARCHITECTURE.md)
+* sqlite3 (older driver)
+* @libsql/client
+
+---
+
+## Why Alternatives Were Rejected
+
+* **better-sqlite3**: Failed to compile on Node.js 24 due to C++17/C++20 compatibility issues in native bindings
+* **sqlite3**: Older driver with callback-based API, less modern than @libsql/client
+
+---
+
+## Trade-offs
+
+* **Pros**: Works with Node.js 24, modern promise-based API, compatible with Drizzle ORM
+* **Cons**: Deviates from the originally specified better-sqlite3 in ARCHITECTURE.md
+
+---
+
+## Future Improvements
+
+* Revert to better-sqlite3 if compilation issues are resolved in future versions
+* Consider using PostgreSQL for production as specified in ARCHITECTURE.md
 
 ---
 
