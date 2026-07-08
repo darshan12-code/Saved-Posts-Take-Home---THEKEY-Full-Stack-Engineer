@@ -1,13 +1,20 @@
 import express from 'express';
 import cors from 'cors';
+import routes from './routes';
+import { errorHandler, requestLogger, authenticate } from './middleware';
 
 const app = express();
 
+// Middleware
 app.use(cors());
 app.use(express.json());
+app.use(requestLogger);
+app.use(authenticate);
 
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok' });
-});
+// Routes
+app.use('/', routes);
+
+// Error handling (must be after routes)
+app.use(errorHandler);
 
 export default app;
